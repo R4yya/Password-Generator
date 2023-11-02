@@ -161,3 +161,6 @@ cython_debug/
 
 # rockyou.txt
 rockyou.txt
+
+# nltk data
+nltk_data/
