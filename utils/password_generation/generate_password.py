@@ -1,6 +1,20 @@
 from secrets import choice
 from string import ascii_lowercase, ascii_uppercase, digits, punctuation
+import nltk
+from nltk.corpus import words
+import os
 
+
+def get_nltk_data_in_project():
+    current_directory = os.getcwd()
+    parent_directory = os.path.abspath(os.path.join(current_directory, os.pardir, os.pardir))
+
+    nltk_data_directory = os.path.join(parent_directory, 'nltk_data')
+
+    if not os.path.exists(nltk_data_directory):
+        nltk.download('words', download_dir='C:/Users/danil/nltk_data')\
+
+    nltk.data.path.append(nltk_data_directory)
 
 def generate_secure_password(length, uppercase_statement=True, digits_statement=True, punctuation_statement=True):
     alphabet = ascii_lowercase
@@ -14,50 +28,17 @@ def generate_secure_password(length, uppercase_statement=True, digits_statement=
     return password
 
 
-def generate_mnemonic_password(password):
-    letter_to_words = {
-        'a': ['apple', 'apartment', 'awesome', 'amazing', 'ate'],
-        'b': ['banana', 'ball', 'beach', 'bird', 'book'],
-        'c': ['cat', 'car', 'cake', 'chocolate', 'cloud'],
-        'd': ['dog', 'desk', 'dolphin', 'diamond', 'dream'],
-        'e': ['elephant', 'egg', 'earth', 'energy', 'enjoy'],
-        'f': ['fox', 'flower', 'forest', 'fire', 'friend'],
-        'g': ['giraffe', 'game', 'guitar', 'grass', 'green'],
-        'h': ['horse', 'hat', 'house', 'heart', 'happy'],
-        'i': ['ice cream', 'island', 'igloo', 'insect', 'imagine'],
-        'j': ['jellyfish', 'jacket', 'juice', 'jungle', 'joy'],
-        'k': ['kangaroo', 'kite', 'key', 'king', 'kind'],
-        'l': ['lion', 'lamp', 'lake', 'leaf', 'laugh'],
-        'm': ['monkey', 'moon', 'mountain', 'music', 'magic'],
-        'n': ['nose', 'net', 'nest', 'night', 'new'],
-        'o': ['octopus', 'owl', 'ocean', 'orange', 'open'],
-        'p': ['panda', 'pear', 'piano', 'penguin', 'peace'],
-        'q': ['queen', 'quill', 'quiet', 'quilt', 'question'],
-        'r': ['rabbit', 'rose', 'rainbow', 'robot', 'run'],
-        's': ['sun', 'star', 'sea', 'snow', 'smile'],
-        't': ['tiger', 'tree', 'train', 'turtle', 'top'],
-        'u': ['unicorn', 'umbrella', 'up', 'unique', 'under'],
-        'v': ['volcano', 'violin', 'vase', 'violet', 'village'],
-        'w': ['whale', 'water', 'wind', 'wonder', 'wish'],
-        'x': ['xylophone', 'x-ray', 'xenon', 'xylitol', 'xenophobia'],
-        'y': ['yak', 'yogurt', 'yellow', 'year', 'youth'],
-        'z': ['zebra', 'zipper', 'zero', 'zeppelin', 'zucchini']
-    }
+def generate_mnemonic_password(password, word_length=5):
+    word_list = words.words()
 
     mnemonic_password = ''
-    letter_index = 0
 
     for char in password:
         if char.isalpha():
             letter = char.lower()
-            if letter in letter_to_words:
-                word_list = letter_to_words[letter]
-                if word_list:
-                    word = word_list[letter_index % len(word_list)]
-                    letter_index += 1
-                    mnemonic_password += word if char.islower() else word.capitalize()
-                else:
-                    mnemonic_password += char
+            if letter.isalpha() and letter in 'abcdefghijklmnopqrstuvwxyz':
+                word = choice([word for word in word_list if word.startswith(letter) and len(word)<= word_length])
+                mnemonic_password += word if char.islower() else word.capitalize()
             else:
                 mnemonic_password += char
         else:
@@ -67,7 +48,11 @@ def generate_mnemonic_password(password):
 
 
 if __name__ == '__main__':
-    secure_password = generate_secure_password(6)
+    get_nltk_data_in_project()
+
+    password_length = int(input('Enter the desired password length to generate: '))
+
+    secure_password = generate_secure_password(length=password_length)
     print(f'Your generated password {secure_password}')
 
     mnemonic_password = generate_mnemonic_password(secure_password)
