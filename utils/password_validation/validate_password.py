@@ -50,6 +50,19 @@ def validate_password(password):
     else:
         messages.append('Your password does not contain common words')
 
+    def has_repeating_sequences(password, sequence_length=5):
+        for i in range(len(password) - sequence_length + 1):
+            sequence = password[i:i + sequence_length]
+            for j in range(i + sequence_length, len(password) - sequence_length + 1):
+                if sequence == password[j:j + sequence_length]:
+                    return True
+        return False
+
+    if has_repeating_sequences(password):
+        errors.append('Your password has long repeating character sequences')
+    else:
+        messages.append('Your password does not contain repeating character sequences')
+
     return (messages, warnings, errors)
 
 
